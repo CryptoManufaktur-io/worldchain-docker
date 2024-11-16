@@ -26,9 +26,6 @@ services:
       - opgeth-data:/var/lib/op-geth
       - jwtsecret:/var/lib/op-geth/ee-secret
       - /etc/localtime:/etc/localtime:ro
-    ports:
-      - ${OPGETH_P2P_PORT:-39393}:${OPGETH_P2P_PORT:-39393}/tcp
-      - ${OPGETH_P2P_PORT:-39393}:${OPGETH_P2P_PORT:-39393}/udp
     networks:
       default:
         aliases:
@@ -44,8 +41,6 @@ services:
       - --rollup.disabletxpoolgossip
       - --rollup.halt
       - major
-      - --port
-      - ${OPGETH_P2P_PORT:-39393}
       - --authrpc.addr
       - 0.0.0.0
       - --authrpc.port
@@ -79,24 +74,24 @@ services:
       - --override.canyon=0
     labels:
       - traefik.enable=true
-      - traefik.http.routers.${RPC_HOST:-op}.service=${RPC_HOST:-op}
-      - traefik.http.routers.${RPC_HOST:-op}.entrypoints=websecure
-      - traefik.http.routers.${RPC_HOST:-op}.rule=Host(`${RPC_HOST:-op}.${DOMAIN}`)
-      - traefik.http.routers.${RPC_HOST:-op}.tls.certresolver=letsencrypt
-      - traefik.http.routers.${RPC_HOST:-op}lb.service=${RPC_HOST:-op}
-      - traefik.http.routers.${RPC_HOST:-op}lb.entrypoints=websecure
-      - traefik.http.routers.${RPC_HOST:-op}lb.rule=Host(`${RPC_LB:-op-lb}.${DOMAIN}`)
-      - traefik.http.routers.${RPC_HOST:-op}lb.tls.certresolver=letsencrypt
-      - traefik.http.services.${RPC_HOST:-op}.loadbalancer.server.port=${RPC_PORT:-8545}
-      - traefik.http.routers.${WS_HOST:-opws}.service=${WS_HOST:-opws}
-      - traefik.http.routers.${WS_HOST:-opws}.entrypoints=websecure
-      - traefik.http.routers.${WS_HOST:-opws}.rule=Host(`${WS_HOST:-opws}.${DOMAIN}`)
-      - traefik.http.routers.${WS_HOST:-opws}.tls.certresolver=letsencrypt
-      - traefik.http.routers.${WS_HOST:-opws}lb.service=${WS_HOST:-opws}
-      - traefik.http.routers.${WS_HOST:-opws}lb.entrypoints=websecure
-      - traefik.http.routers.${WS_HOST:-opws}lb.rule=Host(`${WS_LB:-opws-lb}.${DOMAIN}`)
-      - traefik.http.routers.${WS_HOST:-opws}lb.tls.certresolver=letsencrypt
-      - traefik.http.services.${WS_HOST:-opws}.loadbalancer.server.port=${WS_PORT:-8546}
+      - traefik.http.routers.${RPC_HOST:-worldchain}.service=${RPC_HOST:-worldchain}
+      - traefik.http.routers.${RPC_HOST:-worldchain}.entrypoints=websecure
+      - traefik.http.routers.${RPC_HOST:-worldchain}.rule=Host(`${RPC_HOST:-worldchain}.${DOMAIN}`)
+      - traefik.http.routers.${RPC_HOST:-worldchain}.tls.certresolver=letsencrypt
+      - traefik.http.routers.${RPC_HOST:-worldchain}lb.service=${RPC_HOST:-worldchain}
+      - traefik.http.routers.${RPC_HOST:-worldchain}lb.entrypoints=websecure
+      - traefik.http.routers.${RPC_HOST:-worldchain}lb.rule=Host(`${RPC_LB:-worldchain-lb}.${DOMAIN}`)
+      - traefik.http.routers.${RPC_HOST:-worldchain}lb.tls.certresolver=letsencrypt
+      - traefik.http.services.${RPC_HOST:-worldchain}.loadbalancer.server.port=${RPC_PORT:-8545}
+      - traefik.http.routers.${WS_HOST:-worldchainws}.service=${WS_HOST:-worldchainws}
+      - traefik.http.routers.${WS_HOST:-worldchainws}.entrypoints=websecure
+      - traefik.http.routers.${WS_HOST:-worldchainws}.rule=Host(`${WS_HOST:-worldchainws}.${DOMAIN}`)
+      - traefik.http.routers.${WS_HOST:-worldchainws}.tls.certresolver=letsencrypt
+      - traefik.http.routers.${WS_HOST:-worldchainws}lb.service=${WS_HOST:-worldchainws}
+      - traefik.http.routers.${WS_HOST:-worldchainws}lb.entrypoints=websecure
+      - traefik.http.routers.${WS_HOST:-worldchainws}lb.rule=Host(`${WS_LB:-worldchainws-lb}.${DOMAIN}`)
+      - traefik.http.routers.${WS_HOST:-worldchainws}lb.tls.certresolver=letsencrypt
+      - traefik.http.services.${WS_HOST:-worldchainws}.loadbalancer.server.port=${WS_PORT:-8546}
       - metrics.scrape=true
       - metrics.path=/debug/metrics/prometheus
       - metrics.port=6060
@@ -146,8 +141,6 @@ services:
       - ${L1_BEACON}
       - --rpc.addr
       - 0.0.0.0
-      - --rpc.port
-      - ${OPNODE_RPC_PORT:-9545}
       - --metrics.enabled
       - --p2p.listen.tcp
       - ${OPNODE_P2P_PORT:-9222}
@@ -157,8 +150,6 @@ services:
       - /var/lib/op-node/opnode_peerstore_db
       - --p2p.priv.path
       - /var/lib/op-node/opnode_p2p_priv.txt
-      - --syncmode
-      - execution-layer
       - --l1.trustrpc=true
       - --override.fjord=1721826000
       - --override.granite=1727780400
@@ -168,16 +159,6 @@ services:
       - --sequencer.l1-confs=10
       - --verifier.l1-confs=10
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.${OPNODE_HOST:-opnode}.service=${OPNODE_HOST:-opnode}
-      - traefik.http.routers.${OPNODE_HOST:-opnode}.entrypoints=websecure
-      - traefik.http.routers.${OPNODE_HOST:-opnode}.rule=Host(`${OPNODE_HOST:-opnode}.${DOMAIN}`)
-      - traefik.http.routers.${OPNODE_HOST:-opnode}.tls.certresolver=letsencrypt
-      - traefik.http.routers.${OPNODE_HOST:-opnode}lb.service=${OPNODE_HOST:-opnode}
-      - traefik.http.routers.${OPNODE_HOST:-opnode}lb.entrypoints=websecure
-      - traefik.http.routers.${OPNODE_HOST:-opnode}lb.rule=Host(`${OPNODE_LB:-opnode-lb}.${DOMAIN}`)
-      - traefik.http.routers.${OPNODE_HOST:-opnode}lb.tls.certresolver=letsencrypt
-      - traefik.http.services.${OPNODE_HOST:-opnode}.loadbalancer.server.port=${OPNODE_RPC_PORT:-9545}
       - metrics.scrape=true
       - metrics.path=/metrics
       - metrics.port=7300

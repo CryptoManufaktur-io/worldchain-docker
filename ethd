@@ -17,10 +17,13 @@ version() {
   __var="COMPOSE_FILE"
   __value=$(__get_value_from_env "${__var}" "${__env_file}")
 # Client versions
-# Adjust for your clients and how to check their version
   case "${__value}" in
-    *x.yml* )
+    *worldchain.yml* )
+      echo "OPGETH_DOCKER_TAG: $(grep -E '^OPGETH_DOCKER_TAG=' .env | cut -d '=' -f2)"
       __docompose exec op-geth geth version
+      echo
+      echo "OPNODE_DOCKER_TAG: $(grep -E '^OPNODE_DOCKER_TAG=' .env | cut -d '=' -f2)"
+      __docompose exec op-node op-node --version
       ;;&
   esac
 }
@@ -32,8 +35,9 @@ __env_migrate() {
   fi
 
 # Adjust these vars to your project
-  __all_vars=( COMPOSE_FILE NETWORK SNAPSHOT LOG_LEVEL DOMAIN RPC_HOST RPC_LB WS_HOST WS_LB RPC_PORT WS_PORT P2P_PORT \
-             SCRIPT_TAG X_SRC_BUILD_TARGET X_SRC_REPO X_DOCKER_TAG X_DOCKER_REPO X_DOCKERFILE )
+  __all_vars=( COMPOSE_FILE NETWORK LOG_LEVEL DOMAIN RPC_HOST RPC_LB WS_HOST WS_LB RPC_PORT WS_PORT OPNODE_P2P_PORT \
+             SCRIPT_TAG OPNODE_DOCKER_TAG OPGETH_DOCKER_TAG L1_RPC L1_RPC_KIND L1_BEACON L2_CONNECTION_KIND \
+             SEQUENCER GENESIS_FILE_URL ROLLUP_FILE_URL OPNODE_P2P_BOOTNODES )
   __old_vars=( )
   __new_vars=( )
 
@@ -54,7 +58,7 @@ __env_migrate() {
   for __var in "${__all_vars[@]}"; do
     __value=$(__get_value_from_env "${__var}" "${__env_file}.source")
 # Adjust for vars that are possibly empty
-    if [ -n "${__value}" ] || [ "${__var}" = "SNAPSHOT" ]; then
+    if [ -n "${__value}" ]; then
       # Handle & gracefully, as well as multi-line
       __update_value_in_env "${__var}" "$__value" "${__env_file}"
     fi
