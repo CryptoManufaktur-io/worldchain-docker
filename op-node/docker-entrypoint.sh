@@ -30,7 +30,7 @@ curl \
 set -e
 
 
-if [ ! -f /var/lib/op-node/rollup.json ]; then
+if [ ! -f /var/lib/op-node/config/rollup.json ]; then
   echo "No rollup.json found, this is fatal. Please check your download link for it in .env"
   exit 1
 fi
