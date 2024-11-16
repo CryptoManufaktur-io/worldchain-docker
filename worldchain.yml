@@ -133,6 +133,8 @@ services:
       - --rollup.halt
       - major
       - --rollup.load-protocol-versions=true
+      - --rollup.config
+      - /var/lib/op-node/config/rollup.json
       - --l1
       - ${L1_RPC}
       - --l1.rpckind
