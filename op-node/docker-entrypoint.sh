@@ -14,7 +14,26 @@ fi
 
 __public_ip="--p2p.advertise.ip $(wget -qO- https://ifconfig.me/ip)"
 
-wget $ROLLUP_FILE_URL -O /var/lib/op-node/rollup.json
+# We use Notion links and this may fail
+set +e
+curl \
+  --fail \
+  --show-error \
+  --silent \
+  --retry-connrefused \
+  --retry-all-errors \
+  --retry 5 \
+  --retry-delay 5 \
+  "${ROLLUP_FILE_URL}" \
+  -o /var/lib/op-node/rollup.json
+set -e
+
+
+if [ ! -f /var/lib/op-node/rollup.json ]; then
+  echo "No rollup.json found, this is fatal. Please check your download link for it in .env"
+  exit 1
+fi
+
 export OP_NODE_ROLLUP_CONFIG="/var/lib/op-node/rollup.json"
 
 # Word splitting is desired for the command line parameters
