@@ -1,3 +1,7 @@
+# Archived repo
+
+Please use [Optimism Docker](https://github.com/CryptoManufaktur-io/optimism-docker) for Worldchain RPC nodes
+
 # Worldchain Docker
 
 Docker compose for Worldchain
